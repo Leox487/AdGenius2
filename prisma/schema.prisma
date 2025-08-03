@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // User activities
+  adInspirations    AdInspiration[]
+  campaignAnalyses  CampaignAnalysis[]
+  linkAnalyses      LinkAnalysis[]
+  adAnalyses        AdAnalysis[]
+
+  @@map("users")
+}
+
+model AdInspiration {
+  id          String   @id @default(cuid())
+  userId      String
+  platform    String
+  industry    String
+  product     String
+  results     String   // JSON string of results
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ad_inspirations")
+}
+
+model CampaignAnalysis {
+  id          String   @id @default(cuid())
+  userId      String
+  campaignUrl String
+  analysis    String   // JSON string of analysis results
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("campaign_analyses")
+}
+
+model LinkAnalysis {
+  id          String   @id @default(cuid())
+  userId      String
+  linkUrl     String
+  analysis    String   // JSON string of analysis results
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("link_analyses")
+}
+
+model AdAnalysis {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  snippet     String
+  analysis    String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ad_analyses")
+}
